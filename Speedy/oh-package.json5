@@ -1,9 +1,11 @@
 {
-  "name": "speedy",
+  "name": "@coner/speedy",
   "version": "1.0.0",
-  "description": "Please describe the basic information.",
+  "description": "Speedy语义化网络请求回调",
   "main": "Index.ets",
-  "author": "",
+  "author": "coner",
   "license": "Apache-2.0",
-  "dependencies": {}
+  "homepage": "https://github.com/conerjoy",
+  "license": "Apache-2.0",    // 必须
+  "dependencies": {}       // 可选，用到的依赖
 }
