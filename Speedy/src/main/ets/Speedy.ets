@@ -65,8 +65,6 @@ export function requestCore<T extends BaseResponse<object> = BaseResponse<object
     try {
       let requestHeader: Record<string, Object> = await Speedy.buildHeader?.(url, header, data) ?? {}
       let allHeader = assign(requestHeader, header)
-      let requestStr: string =
-        "header => " + JSON.stringify(allHeader) + "\nbody => " + JSON.stringify(data) + "\nurl => " + url + "\n"
       http.createHttp().request(url, {
         method: requestMethod,
         header: allHeader,
@@ -92,13 +90,11 @@ export function requestCore<T extends BaseResponse<object> = BaseResponse<object
           onError(response.result)
           onComplete()
         }
-        requestStr += "response => " + JSON.stringify(response)
-        hilog.info(0, "Net", requestStr)
+        hilog.info(0, "Net", warpLog(url, allHeader, data, response))
       }).catch((err: BusinessError) => {
         onError(err)
         onComplete()
-        requestStr += "response => " + JSON.stringify(err)
-        hilog.info(0, "Net", "网络请求异常:http执行异常\n" + requestStr)
+        hilog.info(0, "Net", warpLog(url, allHeader, data, null, err))
       })
     } catch (err) {
       hilog.info(0, "Net", "网络请求异常:执行出错\n" + JSON.stringify(err))
@@ -106,6 +102,31 @@ export function requestCore<T extends BaseResponse<object> = BaseResponse<object
       onComplete()
     }
   })
+}
+
+/**
+ * 包装网络请求log
+ * @param url
+ * @param header
+ * @param data
+ * @param response
+ * @param err
+ * @returns
+ */
+function warpLog(url: string, header: object, data: object, response: http.HttpResponse | null = null, err: BusinessError | null = null): string {
+  let startLog = ''
+  const headerLog = JSON.stringify(header).replace(/,/g, ',\n').replace('{', '').replace('}', '') + '\n'
+  const bodyLog = JSON.stringify(data) + '\n'
+  let dataLog = ''
+  const endLog = `<-- END HTTP\n`
+  if (response) {
+    startLog = `<-- ${response.responseCode} ${url} ${response.performanceTiming.totalTiming}ms\n`
+    dataLog = response.result.toString() + '\n'
+  } else {
+    startLog = `\n<-- ${-1} ${url}\n`
+    dataLog = (err?.message ?? '') + '\n'
+  }
+  return startLog + headerLog + bodyLog + dataLog + endLog
 }
 
 export function assign(target: Record<string, Object>, ...source: Object[]): Record<string, Object> {
