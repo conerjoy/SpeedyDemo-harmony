@@ -2,11 +2,12 @@ Speedy鸿蒙版本
 
 语义化回调网络请求
 
-使用示例
-Speedy.post("login").onSuccess((res) => { // 接口成功
+使用示例<br>
 
-}).onFail((err) => { // 业务失败
- 
-}).onError(err => { // 接口失败
- 
+Speedy.post("login").onSuccess((res) => {
+<br>&emsp;// 接口成功<br>
+}).onFail((err) => {
+<br>&emsp;// 业务失败<br>
+}).onError(err => {
+<br>&emsp;// 接口失败<br>
 })
