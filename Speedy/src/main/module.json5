@@ -1,0 +1,11 @@
+{
+  "module": {
+    "name": "Speedy",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet",
+      "2in1"
+    ]
+  }
+}
