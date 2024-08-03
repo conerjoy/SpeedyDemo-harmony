@@ -18,7 +18,7 @@ Speedy.post<RealResponseBean<UserInfo>>("login")
 ## 安装使用
 ***
 ```json
-ohpm i @coner/Speedy
+ohpm i @coner/speedy
 ```
 
 ## 初始化
