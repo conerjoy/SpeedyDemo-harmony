@@ -8,6 +8,7 @@ import { TokenIgnore } from './TokenIgnore'
 
 export class NetInit {
   static init() {
+    // 根据环境对应不同的url
     Speedy.HOST_URL = (() => {
       switch (NetInit.getEnv()) {
         case Env.PRO:
@@ -21,6 +22,7 @@ export class NetInit {
       }
     })()
 
+    // 自定义请求头
     Speedy.buildHeader = async (url, header, data) => {
       let bundleInfo = await bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION)
       let requestHeader: Record<string, Object> = {
@@ -38,9 +40,16 @@ export class NetInit {
       return requestHeader
     }
 
-    Speedy.trunkFailed = async (header, res) => {
+    // 统一处理业务失败:code != 0
+    Speedy.trunkFailed = async (header, data, res) => {
       return false
     }
+    // 是否提示网络错误
+    Speedy.needToastDisConnect = true
+    // 网络错误提示内容
+    Speedy.disConnectToast = '网络不给力，请稍后重试'
+    // 实际网络请求头名字
+    Speedy.METHOD_NAME = 'method'
   }
 
   static getEnv(): Env {

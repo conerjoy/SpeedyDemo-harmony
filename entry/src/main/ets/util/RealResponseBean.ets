@@ -2,7 +2,7 @@
  * @author 610965
  * @data 2024/8/1 10:16
  */
-import { BaseResponse } from '@ohos/Speedy/'
+import { BaseResponse } from '@ohos/Speedy'
 
 export class RealResponseBean<T> implements BaseResponse<T> {
   success: boolean = false

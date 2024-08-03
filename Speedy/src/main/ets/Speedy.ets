@@ -21,28 +21,56 @@ import { promptAction } from '@kit.ArkUI'
  */
 export default class Speedy {
   static buildHeader: ((url: string, header: object, data: object) => Promise<Record<string, Object>>) | null = null
+  // 是否提示网络错误
   static needToastDisConnect = true
-  // 是否提示网络错误
+  // 网络错误提示内容
   static disConnectToast = '网络不给力，请稍后重试'
-  // 是否提示网络错误
-
+  // 网络请求url
   static HOST_URL: string
+  // 实际网络请求头名字
+  static METHOD_NAME = 'method'
   /**
    * 请求失败的总处理方法
    * @returns 是否消费此次事件
    */
-  static trunkFailed: <T>(header: Record<string, Object>, res: BaseResponse<T>) => Promise<boolean>
+  static trunkFailed: <T>(header: object, data: object, res: BaseResponse<T>) => Promise<boolean>
 
+  /**
+   * get方式发起网络请求
+   *
+   * @param url
+   * @returns
+   */
   static get<T extends BaseResponse<object> = BaseResponse<object>>(url: string): ResponseHandler<T> {
     return requestCore(url, http.RequestMethod.GET, new Object())
   }
 
+  /**
+   * post方式发起网络请求
+   *
+   * 适合统一网关平台，实际请求放置在header中
+   *
+   * @param method
+   * @param data
+   * @param header
+   * @returns
+   */
   static post<T extends BaseResponse<object> = BaseResponse<object>>(method: string, data: Record<string, Object | Record<string, Object>> = {},
     header: Record<string, Object> = {}): ResponseHandler<T> {
-    header['method'] = method
+    header[Speedy.METHOD_NAME] = method
     return requestCore(Speedy.HOST_URL, http.RequestMethod.POST, data, header)
   }
 
+  /**
+   * post方式发起网络请求
+   *
+   * 适合 https://xxx.xxx.com/xxx 拼接 user/login
+   *
+   * @param url
+   * @param data
+   * @param header
+   * @returns
+   */
   static postUrl<T extends BaseResponse<object> = BaseResponse<object>>(url: string, data: Record<string, Object | Record<string, Object>> = {},
     header: Record<string, Object> = {}): ResponseHandler<T> {
     return requestCore(Speedy.HOST_URL + url, http.RequestMethod.POST, data, header)
@@ -78,7 +106,7 @@ export function requestCore<T extends BaseResponse<object> = BaseResponse<object
             onSuccess(res)
             onComplete()
           } else {
-            if (!await Speedy.trunkFailed(allHeader, res)) {
+            if (!await Speedy.trunkFailed(allHeader, data, res)) {
               onFail(res, response.result.toString())
             }
             onComplete()
